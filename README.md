@@ -95,6 +95,23 @@ src/
     └── ui/                     Slider, Chip, Sheet, Toast, Icon
 ```
 
+## Установка на Windows
+
+Готовый установщик `.exe` лежит в **Releases** репозитория — релиз с тегом `ai-photo-editor-v…`.
+
+1. Скачайте `ai-photo-editor-Setup-<версия>.exe` и запустите.
+2. Если Windows покажет «Система Windows защитила ваш компьютер» — **Подробнее → Выполнить в любом случае**
+   (установщик не подписан платным сертификатом, поэтому SmartScreen его не знает).
+3. Выберите папку — ярлык «Фоторедактор с ИИ» появится на рабочем столе и в меню «Пуск».
+
+Десктопная версия — это то же приложение в окне [Electron](https://www.electronjs.org/): `electron/main.cjs` открывает
+собранный `dist` через свою схему `app://` (ведёт себя как https, поэтому работают модули, Web Workers и IndexedDB),
+внешние ссылки уходят в браузер. Service Worker в этой сборке отключён (`DESKTOP=1`).
+
+**Как выпустить новую версию:** поднимите `version` в `package.json` и запушьте в ветку —
+`.github/workflows/release.yml` увидит, что релиза `ai-photo-editor-v<версия>` ещё нет, соберёт установщик на Windows и опубликует релиз. Собрать вручную на Windows:
+`DESKTOP=1 npm run build && npm run dist:win` (результат — в `release/`).
+
 ## Деплой
 
 `.github/workflows/deploy.yml` собирает приложение и публикует на GitHub Pages при пуше в `main`.

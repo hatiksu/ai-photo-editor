@@ -26,3 +26,6 @@ dist-ssr
 # Результаты тестов
 test-results
 playwright-report
+
+# Установщики electron-builder
+release

@@ -1,0 +1,29 @@
+# Сборка установщика для Windows: npm run dist:win (на Windows) или workflow .github/workflows/release.yml
+appId: com.hatiksu.photoeditor
+productName: Фоторедактор с ИИ
+copyright: © 2026 Hatiksu
+directories:
+  output: release
+  buildResources: public
+files:
+  - dist/**/*
+  - electron/**/*
+  - package.json
+  # Всё нужное уже собрано Vite в dist — node_modules в установщик не кладём
+  - '!node_modules/**/*'
+artifactName: ${name}-Setup-${version}.${ext}
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  icon: public/icon-512.png
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Фоторедактор с ИИ
+  uninstallDisplayName: Фоторедактор с ИИ
+  installerLanguages: [ru_RU]
+  language: '1049'

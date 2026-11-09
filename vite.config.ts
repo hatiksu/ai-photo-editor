@@ -23,6 +23,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      // В десктопной версии (Electron) Service Worker не нужен — приложение и так локальное
+      disable: process.env.DESKTOP === '1',
       registerType: 'prompt',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {

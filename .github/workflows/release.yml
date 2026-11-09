@@ -1,0 +1,83 @@
+name: Release for Windows
+
+# Установщик .exe собирается на Windows и публикуется в GitHub Releases с тегом ai-photo-editor-v<версия>.
+# Релиз создаётся при пуше в ветку feature/ai-photo-editor, если для версии из package.json его ещё нет:
+# чтобы выпустить новую версию, достаточно поднять "version" в package.json.
+# Ручной запуск: Actions → Release for Windows → Run workflow.
+on:
+  push:
+    branches: [feature/ai-photo-editor]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-ai-photo-editor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Есть ли новая версия
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+      exists: ${{ steps.release.outputs.exists }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        run: |
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=ai-photo-editor-v$version" >> "$GITHUB_OUTPUT"
+      - id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "${{ steps.version.outputs.tag }}" --repo "${{ github.repository }}" > /dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Релиз ${{ steps.version.outputs.tag }} уже есть — поднимите version в package.json, чтобы выпустить новый"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  windows:
+    name: Установщик для Windows
+    needs: check
+    if: needs.check.outputs.exists == 'false'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Сборка приложения для десктопа
+        run: npm run build
+        env:
+          DESKTOP: '1'
+      - name: Установщик .exe
+        run: npx electron-builder --win nsis --publish never
+      - name: Файл установщика в артефакты запуска
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: release/*.exe
+          if-no-files-found: error
+      - name: Публикация релиза
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.check.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: Фоторедактор с ИИ ${{ needs.check.outputs.version }} для Windows
+          files: release/*.exe
+          body: |
+            ## Фоторедактор с ИИ ${{ needs.check.outputs.version }} для Windows
+
+            1. Скачайте `.exe` ниже и запустите.
+            2. Если Windows покажет «Система Windows защитила ваш компьютер» — нажмите **Подробнее → Выполнить в любом случае**. Установщик не подписан платным сертификатом, поэтому SmartScreen его не знает.
+            3. Выберите папку — ярлык появится на рабочем столе и в меню «Пуск».
+
+            Собрано из ветки `feature/ai-photo-editor`, коммит ${{ github.sha }}.

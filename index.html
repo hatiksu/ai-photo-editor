@@ -1,166 +1,23 @@
 <!doctype html>
 <html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Фоторедактор с ИИ</title>
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-  <header class="topbar">
-    <div class="brand">✦ Фоторедактор <span>ИИ</span></div>
-    <div class="actions">
-      <label class="btn" title="Открыть изображение (Ctrl+O)">
-        Открыть
-        <input id="fileInput" type="file" accept="image/*" hidden>
-      </label>
-      <button class="btn" id="undoBtn" title="Отменить (Ctrl+Z)" disabled>↶</button>
-      <button class="btn" id="redoBtn" title="Повторить (Ctrl+Shift+Z)" disabled>↷</button>
-      <button class="btn" id="compareBtn" title="Удерживайте, чтобы увидеть оригинал" disabled>До / После</button>
-      <button class="btn" id="resetBtn" title="Сбросить все правки" disabled>Сброс</button>
-      <div class="export">
-        <select id="exportFormat" aria-label="Формат">
-          <option value="image/jpeg">JPEG</option>
-          <option value="image/png">PNG</option>
-          <option value="image/webp">WebP</option>
-        </select>
-        <button class="btn primary" id="exportBtn" disabled>Скачать</button>
-      </div>
-    </div>
-  </header>
-
-  <main class="layout">
-    <section class="stage" id="stage">
-      <div class="dropzone" id="dropzone">
-        <div class="dz-inner">
-          <div class="dz-icon">🖼️</div>
-          <p><strong>Перетащите фото сюда</strong></p>
-          <p class="muted">или нажмите «Открыть», или вставьте из буфера (Ctrl+V)</p>
-        </div>
-      </div>
-      <div class="canvas-wrap" id="canvasWrap" hidden>
-        <canvas id="view"></canvas>
-        <div class="crop-overlay" id="cropOverlay" hidden>
-          <div class="crop-rect" id="cropRect">
-            <span class="h nw" data-h="nw"></span><span class="h ne" data-h="ne"></span>
-            <span class="h sw" data-h="sw"></span><span class="h se" data-h="se"></span>
-            <i class="grid"></i>
-          </div>
-        </div>
-      </div>
-      <div class="busy" id="busy" hidden>
-        <div class="spinner"></div>
-        <div id="busyText">Обработка…</div>
-      </div>
-      <div class="info" id="info"></div>
-    </section>
-
-    <aside class="panel">
-      <nav class="tabs" role="tablist">
-        <button class="tab active" data-tab="ai">ИИ</button>
-        <button class="tab" data-tab="adjust">Настройки</button>
-        <button class="tab" data-tab="filters">Фильтры</button>
-        <button class="tab" data-tab="transform">Кадр</button>
-      </nav>
-
-      <!-- ИИ -->
-      <div class="tab-body" data-body="ai">
-        <div class="card">
-          <h3>Авто-улучшение</h3>
-          <p class="muted">Анализ гистограммы и баланса белого прямо в браузере — без сети.</p>
-          <button class="btn wide" id="autoBtn" disabled>✨ Улучшить автоматически</button>
-        </div>
-
-        <div class="card">
-          <h3>Удаление фона</h3>
-          <p class="muted">Нейросеть работает локально в браузере. Первый запуск скачивает модель (~40 МБ).</p>
-          <button class="btn wide" id="bgBtn" disabled>✂️ Удалить фон</button>
-          <div class="bg-options" id="bgOptions" hidden>
-            <span class="muted">Новый фон:</span>
-            <div class="chips">
-              <button class="chip" data-bg="transparent">Прозрачный</button>
-              <button class="chip" data-bg="white">Белый</button>
-              <button class="chip" data-bg="blur">Размытый</button>
-              <label class="chip color-chip">Цвет <input type="color" id="bgColor" value="#3b82f6"></label>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <h3>ИИ-ассистент (Claude)</h3>
-          <p class="muted">Опишите, что хотите получить — Claude посмотрит на фото и подберёт настройки.</p>
-          <textarea id="aiPrompt" rows="3" placeholder="Например: сделай теплее и драматичнее, как на закате"></textarea>
-          <div class="row">
-            <button class="btn wide primary" id="aiBtn" disabled>🪄 Применить</button>
-          </div>
-          <div class="chips suggestions">
-            <button class="chip" data-prompt="Профессионально отретушируй это фото, сделай его максимально выигрышным">Сделай красиво</button>
-            <button class="chip" data-prompt="Кинематографичный вид: приглушённые цвета, глубокие тени, лёгкая виньетка">Кино</button>
-            <button class="chip" data-prompt="Яркое летнее настроение, сочные цвета">Лето</button>
-            <button class="chip" data-prompt="Стильное чёрно-белое фото с высоким контрастом">Ч/Б арт</button>
-            <button class="chip" data-prompt="Мягкий винтажный плёночный стиль">Плёнка</button>
-          </div>
-          <div class="ai-result" id="aiResult" hidden>
-            <p id="aiExplanation"></p>
-            <div class="caption-box">
-              <span class="muted">Подпись:</span>
-              <p id="aiCaption"></p>
-              <button class="btn small" id="copyCaption">Копировать</button>
-            </div>
-          </div>
-          <details class="key-box">
-            <summary>API-ключ Anthropic</summary>
-            <input id="apiKey" type="password" placeholder="sk-ant-…" autocomplete="off">
-            <p class="muted small">Ключ хранится только в этом браузере и отправляется напрямую в API Anthropic. Не используйте этот режим на общих компьютерах.</p>
-          </details>
-        </div>
-      </div>
-
-      <!-- Настройки -->
-      <div class="tab-body" data-body="adjust" hidden>
-        <div id="sliders"></div>
-      </div>
-
-      <!-- Фильтры -->
-      <div class="tab-body" data-body="filters" hidden>
-        <div class="presets" id="presets"></div>
-      </div>
-
-      <!-- Кадр -->
-      <div class="tab-body" data-body="transform" hidden>
-        <div class="card">
-          <h3>Поворот и отражение</h3>
-          <div class="grid2">
-            <button class="btn" data-transform="rotL" disabled>⟲ 90°</button>
-            <button class="btn" data-transform="rotR" disabled>⟳ 90°</button>
-            <button class="btn" data-transform="flipH" disabled>⇋ По горизонтали</button>
-            <button class="btn" data-transform="flipV" disabled>⇵ По вертикали</button>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Обрезка</h3>
-          <div class="chips" id="aspectChips">
-            <button class="chip active" data-aspect="free">Свободно</button>
-            <button class="chip" data-aspect="1">1:1</button>
-            <button class="chip" data-aspect="1.3333">4:3</button>
-            <button class="chip" data-aspect="0.75">3:4</button>
-            <button class="chip" data-aspect="1.7778">16:9</button>
-            <button class="chip" data-aspect="0.5625">9:16</button>
-          </div>
-          <div class="row">
-            <button class="btn wide" id="cropStart" disabled>Начать обрезку</button>
-          </div>
-          <div class="row" id="cropActions" hidden>
-            <button class="btn wide primary" id="cropApply">Применить</button>
-            <button class="btn wide" id="cropCancel">Отмена</button>
-          </div>
-        </div>
-      </div>
-    </aside>
-  </main>
-
-  <div class="toast" id="toast" hidden></div>
-
-  <script type="module" src="js/app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Фоторедактор с нейросетями: удаление фона, авто-улучшение и правки текстом. Работает без интернета." />
+    <meta name="theme-color" content="#08090d" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Фоторедактор" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@600;700&display=swap" rel="stylesheet" />
+    <title>Фоторедактор с ИИ</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>

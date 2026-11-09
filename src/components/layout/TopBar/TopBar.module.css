@@ -1,0 +1,47 @@
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: calc(var(--topbar-h) + var(--safe-top));
+  padding: var(--safe-top) 12px 0;
+}
+
+.history {
+  display: flex;
+  gap: 4px;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.icon:disabled {
+  color: var(--surface-3);
+  cursor: default;
+}
+
+.icon:not(:disabled):active {
+  background: var(--surface-2);
+}
+
+.export {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), #5b3bff);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}

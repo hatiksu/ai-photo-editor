@@ -1,0 +1,91 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+
+.rect {
+  position: absolute;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  cursor: move;
+  touch-action: none;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, transparent calc(33.33% - 0.5px), rgba(255, 255, 255, 0.4) calc(33.33% - 0.5px), rgba(255, 255, 255, 0.4) calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px), transparent calc(66.66% - 0.5px), rgba(255, 255, 255, 0.4) calc(66.66% - 0.5px), rgba(255, 255, 255, 0.4) calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(33.33% - 0.5px), rgba(255, 255, 255, 0.4) calc(33.33% - 0.5px), rgba(255, 255, 255, 0.4) calc(33.33% + 0.5px), transparent calc(33.33% + 0.5px), transparent calc(66.66% - 0.5px), rgba(255, 255, 255, 0.4) calc(66.66% - 0.5px), rgba(255, 255, 255, 0.4) calc(66.66% + 0.5px), transparent calc(66.66% + 0.5px));
+}
+
+/* Уголки крупные — под палец; видимая часть меньше зоны нажатия */
+.handle {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  z-index: 1;
+  touch-action: none;
+}
+
+.handle::before {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 0 solid #fff;
+}
+
+.nw {
+  left: -22px;
+  top: -22px;
+  cursor: nwse-resize;
+}
+
+.nw::before {
+  left: 20px;
+  top: 20px;
+  border-left-width: 4px;
+  border-top-width: 4px;
+}
+
+.ne {
+  right: -22px;
+  top: -22px;
+  cursor: nesw-resize;
+}
+
+.ne::before {
+  right: 20px;
+  top: 20px;
+  border-right-width: 4px;
+  border-top-width: 4px;
+}
+
+.sw {
+  left: -22px;
+  bottom: -22px;
+  cursor: nesw-resize;
+}
+
+.sw::before {
+  left: 20px;
+  bottom: 20px;
+  border-left-width: 4px;
+  border-bottom-width: 4px;
+}
+
+.se {
+  right: -22px;
+  bottom: -22px;
+  cursor: nwse-resize;
+}
+
+.se::before {
+  right: 20px;
+  bottom: 20px;
+  border-right-width: 4px;
+  border-bottom-width: 4px;
+}

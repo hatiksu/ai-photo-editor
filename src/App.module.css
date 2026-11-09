@@ -1,0 +1,85 @@
+/* Мобильная раскладка: верхняя панель / фото / инструмент / вкладки */
+.editor {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    'top'
+    'stage'
+    'panel'
+    'tabs';
+}
+
+.editor > header {
+  grid-area: top;
+}
+
+.editor > nav {
+  grid-area: tabs;
+}
+
+.panel {
+  grid-area: panel;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-radius: 22px 22px 0 0;
+  min-height: 150px;
+}
+
+/* На широком экране панель — справа, вкладки над ней */
+@media (min-width: 900px) {
+  .editor {
+    grid-template-columns: minmax(0, 1fr) 380px;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      'top top'
+      'stage tabs'
+      'stage panel';
+  }
+
+  .editor > div:nth-child(2) {
+    grid-area: stage;
+  }
+
+  .panel {
+    border-radius: 0;
+    border-top: 0;
+    border-left: 1px solid var(--border);
+    overflow-y: auto;
+  }
+
+  .editor > nav {
+    border-top: 0;
+    border-left: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+}
+
+.busy {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(8, 9, 13, 0.72);
+  backdrop-filter: blur(6px);
+  font-weight: 600;
+}
+
+.spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

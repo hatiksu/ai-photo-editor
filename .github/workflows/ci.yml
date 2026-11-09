@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Линтер, типы, сборка и тесты
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Линтер
+        run: npm run lint
+      - name: Проверка типов и сборка
+        run: npm run build
+      - name: Unit-тесты
+        run: npm test
+      - name: Браузер для E2E
+        run: npx playwright install --with-deps chromium
+      - name: E2E-тесты
+        run: npm run test:e2e

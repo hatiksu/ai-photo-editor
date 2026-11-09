@@ -11,6 +11,7 @@
   "code": "https://github.com/hatiksu/ai-photo-editor",
   "mockup": "editor",
   "order": 2,
+  "shot": { "click": "Попробовать на примере" },
   "en": {
     "title": "AI Photo Editor",
     "description": "A mobile photo editor powered by neural networks: removes backgrounds right on the phone, enhances photos automatically and understands edits in plain words via Claude. Installs like an app and works offline.",

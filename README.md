@@ -97,7 +97,7 @@ src/
 
 ## Установка на Windows
 
-Готовый установщик `.exe` лежит в **Releases** репозитория — релиз с тегом `ai-photo-editor-v…`.
+Готовый установщик — в [последнем релизе](https://github.com/hatiksu/ai-photo-editor/releases/latest) (все версии — в [Releases](https://github.com/hatiksu/ai-photo-editor/releases)).
 
 1. Скачайте `ai-photo-editor-Setup-<версия>.exe` и запустите.
 2. Если Windows покажет «Система Windows защитила ваш компьютер» — **Подробнее → Выполнить в любом случае**
